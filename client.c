@@ -1,8 +1,3 @@
-#include <stdio.h> 
-#include <sys/ipc.h> 
-#include <sys/msg.h> 
-#include <stdlib.h>
-#include <signal.h>
 #include "message.h"
 
 int counter = 0;
