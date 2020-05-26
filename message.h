@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <time.h>
+#include <string.h>
 #define SIZE 1024
+#define POEMSIZE 250
 
 // message buffer
 struct message_buffer { 

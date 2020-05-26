@@ -23,20 +23,18 @@ int msg_id_generator(){
     return msg_id;
 }
 
-void sig_handler(int sig)
-{
+void sig_handler(int sig){
+
     message.message_type = sig;
     int msgid = msg_id_generator();
     if(msgsnd(msgid, &message, sizeof(message), 0) == -1){
         perror("msgsnd");
         exit(1);
     }else{
-        if (sig == 2)
-        {
+        if (sig == 2){
             printf("Japanese sent %d (message type = %ld) \n", sig, message.message_type);
         }
-        else if (sig == 3)
-        {
+        else if (sig == 3){
             printf("Western sent %d (message type = %ld) \n", sig, message.message_type);
         }        
     }
@@ -47,7 +45,7 @@ int main(int argc, char const *argv[]){
     
     signal(SIGINT, sig_handler);
     signal(SIGQUIT, sig_handler);
-    while(counter < 5);
+    while(counter < 100);
 
     return 0;
 }
