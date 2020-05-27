@@ -1,5 +1,6 @@
 #include "message.h"
 
+// number of signals
 int counter = 0;
 
 struct message_buffer message;
@@ -25,16 +26,22 @@ int msg_id_generator(){
 
 void sig_handler(int sig){
 
-    message.message_type = sig;
+    if(sig == 2){ /*     CTRL + C    */
+        message.message_signal_type[0] = SIGINT;
+    }else if(sig == 3){ /*    CTRL + \     */
+        message.message_signal_type[0] = SIGQUIT;
+    }
+
+    message.message_type = sig-1;
     int msgid = msg_id_generator();
     if(msgsnd(msgid, &message, sizeof(message), 0) == -1){
         perror("msgsnd");
         exit(1);
     }else{
-        if (sig == 2){
+        if(sig == 2){
             printf("Japanese sent %d (message type = %ld) \n", sig, message.message_type);
         }
-        else if (sig == 3){
+        else if(sig == 3){
             printf("Western sent %d (message type = %ld) \n", sig, message.message_type);
         }        
     }
@@ -43,8 +50,8 @@ void sig_handler(int sig){
 
 int main(int argc, char const *argv[]){
     
-    signal(SIGINT, sig_handler);
-    signal(SIGQUIT, sig_handler);
+    signal(SIGINT, sig_handler); /*    CTRL + C    */
+    signal(SIGQUIT, sig_handler); /*     CTRL + \     */
     while(counter < 100);
 
     return 0;
