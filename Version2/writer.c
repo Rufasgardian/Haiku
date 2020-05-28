@@ -1,35 +1,63 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/ipc.h> 
+#include <sys/msg.h> 
+
+
+// const variables
+#define SIZE 1024
 #define JAP_HAIKU 6  // number of haikus from japanese category, type 1
 #define WEST_HAIKU 9 // number of haikus from western category, type 2
 
-void haiku_to_arr(char *arr[], int type);
 
-
-
-int main(int argc, char const *argv[])
-{
+// message buffer
+struct message_buffer{
+    long message_type; 
     char *jap_array[JAP_HAIKU];
     char *west_array[WEST_HAIKU];
+};
 
-    haiku_to_arr(jap_array, 1);
-    haiku_to_arr(west_array, 2);
 
-    for (int i = 0; i < JAP_HAIKU; i++)
-    {
-        printf("%s\n", jap_array[i]);
-        printf("-----------------\n");
-    }
+// message_buffer object
+struct message_buffer message;
 
-    printf("\n\n");
+
+// functions
+void haiku_to_arr(char *arr[], int type);
+int msg_id_generator();
+
+
+
+
+int main(int argc, char const *argv[]){
+
+    int msgid = msg_id_generator();
+
+    haiku_to_arr(message.jap_array, 1);
+    haiku_to_arr(message.west_array, 2);
+
+    // for (int i = 0; i < JAP_HAIKU; i++)
+    // {
+    //     printf("%s\n", message.jap_array[i]);
+    //     printf("-----------------\n");
+    // }
+
+    // printf("\n\n");
     
-    for (int i = 0; i < WEST_HAIKU; i++)
-    {
-        printf("%s\n", west_array[i]);
-        printf("-----------------\n");
-    }
+    // for (int i = 0; i < WEST_HAIKU; i++)
+    // {
+    //     printf("%s\n", message.west_array[i]);
+    //     printf("-----------------\n");
+    // }
 
+    if(msgsnd(msgid, &message, sizeof(message), 0) == -1){
+        perror("msgsnd");
+        exit(1);
+    }else{
+        printf("SENT\n");
+    }
 
 
     
@@ -37,8 +65,8 @@ int main(int argc, char const *argv[])
 }
 
 
-void haiku_to_arr(char *arr[], int type)
-{
+void haiku_to_arr(char *arr[], int type){
+
     FILE *filePtr;
     char fileName[10];
     char filepath[15];
@@ -46,11 +74,13 @@ void haiku_to_arr(char *arr[], int type)
     int haikuAmount;
     if (type == 1)
     {
+        message.message_type = 1;
         haikuType = "japanese/";
         haikuAmount = JAP_HAIKU;
     }
     else if (type == 2)
     {
+        message.message_type = 2;
         haikuType = "western/";
         haikuAmount = WEST_HAIKU;
     }
@@ -86,4 +116,26 @@ void haiku_to_arr(char *arr[], int type)
         fclose(filePtr);
         filePtr=NULL;
     }
+}
+
+
+
+
+int msg_id_generator(){
+    int msg_id;
+    key_t key;
+    key = ftok("/etc/passwd", 'F');
+    if (key == -1){
+        perror("Key");
+        exit(1);
+    } 
+
+    msg_id = msgget(key, 0666 | IPC_CREAT);
+
+     if(msg_id == -1){
+        perror("msgget");
+        exit(1);
+    }
+
+    return msg_id;
 }
