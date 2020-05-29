@@ -1,46 +1,29 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/ipc.h> 
-#include <sys/msg.h> 
-
-
-// const variables
-#define SIZE 1024
-#define JAP_HAIKU 6  // number of haikus from japanese category, type 1
-#define WEST_HAIKU 9 // number of haikus from western category, type 2
-
-
-// message buffer
-struct message_buffer{
-    long message_type; 
-    char *jap_array[JAP_HAIKU];
-    char *west_array[WEST_HAIKU];
-};
+#include "message.h"
 
 
 // message_buffer object
-struct message_buffer message;
-
+struct message_buffer message_jap;
+struct message_buffer message_western;
 
 // functions
-void haiku_to_arr(char *arr[], int type);
+void haiku_to_arr(struct message_buffer *message, int type);
 int msg_id_generator();
 
 
 
 
-int main(int argc, char const *argv[]){
-
+int main(int argc, char const *argv[])
+{
     int msgid = msg_id_generator();
+    printf("msg id is %d\n", msgid);
 
-    haiku_to_arr(message.jap_array, 1);
-    haiku_to_arr(message.west_array, 2);
+
+    haiku_to_arr(&message_jap, 1);
+    haiku_to_arr(&message_western, 2);
 
     // for (int i = 0; i < JAP_HAIKU; i++)
     // {
-    //     printf("%s\n", message.jap_array[i]);
+    //     printf("%s\n", message_jap.haiku_array[i]);
     //     printf("-----------------\n");
     // }
 
@@ -48,39 +31,44 @@ int main(int argc, char const *argv[]){
     
     // for (int i = 0; i < WEST_HAIKU; i++)
     // {
-    //     printf("%s\n", message.west_array[i]);
+    //     printf("%s\n", message_western.haiku_array[i]);
     //     printf("-----------------\n");
     // }
 
-    if(msgsnd(msgid, &message, sizeof(message), 0) == -1){
+
+    if(msgsnd(msgid, &message_jap, sizeof(message_jap), 0) == -1){
         perror("msgsnd");
         exit(1);
     }else{
-        printf("SENT\n");
+        printf("SENT JAPANESE\n");
     }
 
+    if(msgsnd(msgid, &message_western, sizeof(message_western), 0) == -1){
+        perror("msgsnd");
+        exit(1);
+    }else{
+        printf("SENT WESTERN\n");
+    }
 
-    
     return 0;
 }
 
 
-void haiku_to_arr(char *arr[], int type){
+void haiku_to_arr(struct message_buffer *message, int type){
 
     FILE *filePtr;
     char fileName[10];
     char filepath[15];
     char *haikuType;
     int haikuAmount;
+    message->message_type = type;
     if (type == 1)
     {
-        message.message_type = 1;
         haikuType = "japanese/";
         haikuAmount = JAP_HAIKU;
     }
     else if (type == 2)
     {
-        message.message_type = 2;
         haikuType = "western/";
         haikuAmount = WEST_HAIKU;
     }
@@ -109,8 +97,8 @@ void haiku_to_arr(char *arr[], int type){
             fseek(filePtr, 0, SEEK_END);//puts pointer to the end of file
             int size = ftell(filePtr);  //finds size of file
             fseek(filePtr, 0, SEEK_SET); //puts pointer to the beginnig of file
-            arr[i-1] = (char*)calloc(size, sizeof(char)); //allocates memory
-            fread(arr[i-1], 1, size, filePtr); //puts text into heap
+            // arr[i-1] = (char*)calloc(size, sizeof(char)); //allocates memory
+            fread(message->haiku_array[i-1], 1, size, filePtr); //puts text into heap
             // printf("%s\n", arr[i-1]);
         }
         fclose(filePtr);

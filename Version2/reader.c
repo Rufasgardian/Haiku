@@ -1,45 +1,46 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/ipc.h> 
-#include <sys/msg.h> 
-
-
-// const variables
-#define SIZE 1024
-#define JAP_HAIKU 6  // number of haikus from japanese category, type 1
-#define WEST_HAIKU 9 // number of haikus from western category, type 2
-
-
-// message buffer
-struct message_buffer{
-    long message_type; 
-    char *jap_array[JAP_HAIKU];
-    char *west_array[WEST_HAIKU];
-};
-
+#include "message.h"
 
 // message_buffer object
-struct message_buffer message;
+struct message_buffer message_jap;
+struct message_buffer message_western;
 
 
 int msg_id_generator();
+void read_haiku(int category);
 
 int main(int argc, char const *argv[]){
     
     int msgid = msg_id_generator();
+    printf("msg id is %d\n", msgid);
 
 
-    if(msgrcv(msgid, &message, sizeof(message), 0, 0) == -1){
+    if(msgrcv(msgid, &message_jap, sizeof(message_jap), 0, 0) == -1){
         perror("msgrcv");
         exit(1);
-    }else{
-        printf("received\n");
+    }else if(message_jap.message_type == 1){
+        printf("japanese received\n");
+    }
+    else
+    {
+        printf("Confusion on receiving japanese haikus. Exiting...\n");
+        exit(1);
+    }
+    
+
+    if(msgrcv(msgid, &message_western, sizeof(message_western), 0, 0) == -1){
+        perror("msgrcv");
+        exit(1);
+    }else if(message_western.message_type == 2){
+        printf("western received\n");
+    }
+    else
+    {
+        printf("Confusion on receiving western haikus. Exiting...\n");
+        exit(1);
     }
 
-  
-    printf("WORK HERE SHIRIN\n");
+    read_haiku(1);
+    read_haiku(2);
 
     msgctl(msgid, IPC_RMID, NULL);
 
@@ -64,4 +65,60 @@ int msg_id_generator(){
     }
 
     return msg_id;
+}
+
+void read_haiku(int category){
+    FILE *filePtr;
+    srand(time(0));
+    
+    if (category == 1)
+    {   // creates file named japanese.txt and checks if it is not null
+        if((filePtr=fopen("japanese.txt", "w"))== NULL)
+        {
+            perror("fopen");
+            exit(1);
+        }
+        else
+        {
+            int index = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                index = rand()%JAP_HAIKU;  // RUFAT ASSIGN "INDEX" TO YOUR RANDOM NUMBER
+                //writes into this file
+                fprintf(filePtr, message_jap.haiku_array[index]);
+                fprintf(filePtr, "\n--------------\n");
+            }
+        }
+        fclose(filePtr);
+        filePtr=NULL;
+
+    }
+    else if (category == 2)
+    {
+        // creates file named western.txt and checks if it is not null
+        if((filePtr=fopen("western.txt", "w"))== NULL)
+        {
+            perror("fopen");
+            exit(1);
+        }
+        else
+        {
+            int index = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                index = rand()%WEST_HAIKU; // RUFAT ASSIGN "INDEX" TO YOUR RANDOM NUMBER
+                //writes into this file
+                fprintf(filePtr, message_western.haiku_array[index]);
+                fprintf(filePtr, "\n--------------\n");
+            }
+        }
+        
+        fclose(filePtr);
+        filePtr=NULL;
+    }
+    else
+    {
+        printf("Category is out of range. Exiting...\n");
+    }
+    
 }
