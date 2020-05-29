@@ -18,7 +18,7 @@ int main(int argc, char const *argv[]){
     printf("msg id is %d\n", msgid);
 
 
-    if(msgrcv(msgid, &message_jap, sizeof(message_jap), 0, 0) == -1){
+    if(msgrcv(msgid, &message_jap, sizeof(message_jap), 1, 0) == -1){
         perror("msgrcv");
         exit(1);
     }else if(message_jap.message_type == 1){
@@ -31,7 +31,7 @@ int main(int argc, char const *argv[]){
     }
     
 
-    if(msgrcv(msgid, &message_western, sizeof(message_western), 0, 0) == -1){
+    if(msgrcv(msgid, &message_western, sizeof(message_western), 2, 0) == -1){
         perror("msgrcv");
         exit(1);
     }else if(message_western.message_type == 2){
