@@ -27,22 +27,22 @@ int msg_id_generator(){
 void sig_handler(int sig){
 
     if(sig == 2){ /*     CTRL + C    */
-        message.message_signal_type[0] = SIGINT;
+        message.message_signal_type = SIGINT;
     }else if(sig == 3){ /*    CTRL + \     */
-        message.message_signal_type[0] = SIGQUIT;
+        message.message_signal_type = SIGQUIT;
     }
 
-    message.message_type = sig-1;
     int msgid = msg_id_generator();
+
     if(msgsnd(msgid, &message, sizeof(message), 0) == -1){
         perror("msgsnd");
         exit(1);
     }else{
         if(sig == 2){
-            printf("Japanese sent %d (message type = %ld) \n", sig, message.message_type);
+            printf("Japanese sent with signal %d\n", sig);
         }
         else if(sig == 3){
-            printf("Western sent %d (message type = %ld) \n", sig, message.message_type);
+            printf("Western sent with signal %d\n", sig);
         }        
     }
     counter += 1;
