@@ -21,20 +21,6 @@ int main(int argc, char const *argv[])
     haiku_to_arr(&message_jap, 1);
     haiku_to_arr(&message_western, 2);
 
-    // for (int i = 0; i < JAP_HAIKU; i++)
-    // {
-    //     printf("%s\n", message_jap.haiku_array[i]);
-    //     printf("-----------------\n");
-    // }
-
-    // printf("\n\n");
-    
-    // for (int i = 0; i < WEST_HAIKU; i++)
-    // {
-    //     printf("%s\n", message_western.haiku_array[i]);
-    //     printf("-----------------\n");
-    // }
-
 
     if(msgsnd(msgid, &message_jap, sizeof(message_jap), 0) == -1){
         perror("msgsnd");
