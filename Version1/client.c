@@ -1,9 +1,24 @@
 #include "message.h"
 
+int msg_id_generator();
+void sig_handler(int sig);
+
 // number of signals
 int counter = 0;
 
 struct message_buffer message;
+
+
+
+int main(int argc, char const *argv[]){
+    
+    signal(SIGINT, sig_handler); /*    CTRL + C    */
+    signal(SIGQUIT, sig_handler); /*     CTRL + \     */
+    while(counter < 100);
+
+    return 0;
+}
+
 
 int msg_id_generator(){
     int msg_id;
@@ -46,13 +61,4 @@ void sig_handler(int sig){
         }        
     }
     counter += 1;
-}
-
-int main(int argc, char const *argv[]){
-    
-    signal(SIGINT, sig_handler); /*    CTRL + C    */
-    signal(SIGQUIT, sig_handler); /*     CTRL + \     */
-    while(counter < 100);
-
-    return 0;
 }

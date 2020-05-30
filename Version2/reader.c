@@ -4,6 +4,7 @@
 // message_buffer object
 struct message_buffer message_jap;
 struct message_buffer message_western;
+int msgid;
 
 
 int msg_id_generator();
@@ -14,34 +15,8 @@ int main(int argc, char const *argv[]){
     
     srand(time(0));
 
-    int msgid = msg_id_generator();
+    msgid = msg_id_generator();
     printf("msg id is %d\n", msgid);
-
-
-    if(msgrcv(msgid, &message_jap, sizeof(message_jap), 0, 0) == -1){
-        perror("msgrcv");
-        exit(1);
-    }else if(message_jap.message_type == 1){
-        printf("japanese received\n");
-    }
-    else
-    {
-        printf("Confusion on receiving japanese haikus. Exiting...\n");
-        exit(1);
-    }
-    
-
-    if(msgrcv(msgid, &message_western, sizeof(message_western), 0, 0) == -1){
-        perror("msgrcv");
-        exit(1);
-    }else if(message_western.message_type == 2){
-        printf("western received\n");
-    }
-    else
-    {
-        printf("Confusion on receiving western haikus. Exiting...\n");
-        exit(1);
-    }
 
     read_haiku(1);
     read_haiku(2);
@@ -78,7 +53,20 @@ void read_haiku(int category){
     int rNumber;
 
     if (category == 1)
-    {   // creates file named japanese.txt and checks if it is not null
+    {   
+        if(msgrcv(msgid, &message_jap, sizeof(message_jap), 1, 0) == -1){
+            perror("msgrcv");
+            exit(1);
+        }else if(message_jap.message_type == 1){
+            printf("japanese received\n");
+        }
+        else
+        {
+            printf("Confusion on receiving japanese haikus. Exiting...\n");
+            exit(1);
+        }
+
+        // creates file named japanese.txt and checks if it is not null
         if((filePtr=fopen("japanese.txt", "w"))== NULL)
         {
             perror("fopen");
@@ -97,11 +85,6 @@ void read_haiku(int category){
                         break;
                     }
                 }
-                
-                // RUFAT ASSIGN "INDEX" TO YOUR RANDOM NUMBER
-                //writes into this file
-                // fprintf(filePtr, message_jap.haiku_array[index]);
-                // fprintf(filePtr, "\n--------------\n");
             }
 
             for(int i=0; i < 3; i++){
@@ -116,6 +99,18 @@ void read_haiku(int category){
     }
     else if (category == 2)
     {
+        if(msgrcv(msgid, &message_western, sizeof(message_western), 2, 0) == -1){
+            perror("msgrcv");
+            exit(1);
+        }else if(message_western.message_type == 2){
+            printf("western received\n");
+        }
+        else
+        {
+            printf("Confusion on receiving western haikus. Exiting...\n");
+            exit(1);
+        }
+
         // creates file named western.txt and checks if it is not null
         if((filePtr=fopen("western.txt", "w"))== NULL)
         {
@@ -135,11 +130,6 @@ void read_haiku(int category){
                         break;
                     }
                 }
-                
-                // RUFAT ASSIGN "INDEX" TO YOUR RANDOM NUMBER
-                //writes into this file
-                // fprintf(filePtr, message_jap.haiku_array[index]);
-                // fprintf(filePtr, "\n--------------\n");
             }
 
             for(int i=0; i < 3; i++){
