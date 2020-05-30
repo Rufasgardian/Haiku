@@ -25,7 +25,7 @@ int main(int argc, char const *argv[])
 {
     signal(SIGINT, sig_handler); /*    CTRL + C    */
     signal(SIGQUIT, sig_handler); /*     CTRL + \     */
-    while(counter < 100);
+    while(counter < 1);
     
     return 0;
 }

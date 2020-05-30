@@ -53,7 +53,7 @@ int main(int argc, char const *argv[])
         printf("SENT WESTERN\n");
     }
 
-    while(counter < 2){
+    while(counter < 1){
         if(msgrcv(msgid_sig, &message, sizeof(message), 0, 0) == -1){
             perror("msgrcv");
             exit(1);
