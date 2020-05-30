@@ -8,7 +8,7 @@ struct message_buffer message;
 
 int main(int argc, char const *argv[]){
 
-    int msgid, random_number;
+    int msgid;
     msgid = msg_id_generator();
     
     int haiku_category[2][2];

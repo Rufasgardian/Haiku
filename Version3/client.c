@@ -6,19 +6,19 @@
 #include <sys/types.h>
 #include <string.h>
 
-int msg_id_generator();
+int msg_id_generator2();
 void sig_handler(int sig);
 
 // number of signals
 int counter = 0;
 
 // message buffer
-struct message_buffer { 
-    long message_type; 
-    int message_signal_type[1]; 
+// message buffer
+struct sig_message_buffer {  
+    int message_signal_type; 
 };
 
-struct message_buffer message;
+struct sig_message_buffer message;
 
 int main(int argc, char const *argv[])
 {
@@ -29,10 +29,35 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-int msg_id_generator(){
+
+void sig_handler(int sig){
+
+    if(sig == 2){ /*     CTRL + C    */
+        message.message_signal_type = SIGINT;
+    }else if(sig == 3){ /*    CTRL + \     */
+        message.message_signal_type = SIGQUIT;
+    }
+
+    int msgid = msg_id_generator();
+
+    if(msgsnd(msgid, &message, sizeof(message), 0) == -1){
+        perror("msgsnd");
+        exit(1);
+    }else{
+        if(sig == 2){
+            printf("Japanese sent with signal %d\n", sig);
+        }
+        else if(sig == 3){
+            printf("Western sent with signal %d\n", sig);
+        }        
+    }
+    counter += 1;
+}
+
+int msg_id_generator2(){
     int msg_id;
     key_t key;
-    key = ftok("/etc/passwd", 'F');
+    key = ftok("japanese/3.txt", 'F');
     if (key == -1){
         perror("Key");
         exit(1);
@@ -46,28 +71,4 @@ int msg_id_generator(){
     }
 
     return msg_id;
-}
-
-void sig_handler(int sig){
-
-    if(sig == 2){ /*     CTRL + C    */
-        message.message_signal_type[0] = SIGINT;
-    }else if(sig == 3){ /*    CTRL + \     */
-        message.message_signal_type[0] = SIGQUIT;
-    }
-
-    message.message_type = sig-1;
-    int msgid = msg_id_generator();
-    if(msgsnd(msgid, &message, sizeof(message), 0) == -1){
-        perror("msgsnd");
-        exit(1);
-    }else{
-        if(sig == 2){
-            printf("Japanese sent %d (message type = %ld) \n", sig, message.message_type);
-        }
-        else if(sig == 3){
-            printf("Western sent %d (message type = %ld) \n", sig, message.message_type);
-        }        
-    }
-    counter += 1;
 }
