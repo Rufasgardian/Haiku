@@ -9,8 +9,7 @@
 #include <string.h>
 
 // message buffer
-struct message_buffer { 
-    // long message_type; 
+struct message_buffer {  
     int message_signal_type; 
 };
 

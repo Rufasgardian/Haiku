@@ -1,27 +1,10 @@
 #include "message.h"
 
+int msg_id_generator();
+
 int counter = 0;
 
 struct message_buffer message;
-
-int msg_id_generator(){
-    int msg_id;
-    key_t key;
-    key = ftok("/etc/passwd", 'F');
-    if(key == -1){
-        perror("Key");
-        exit(1);
-    } 
-
-    msg_id = msgget(key, 0666 | IPC_CREAT);
-
-    if(msg_id == -1){
-        perror("msgget");
-        exit(1);
-    }
-    return msg_id;
-}
-
 
 int main(int argc, char const *argv[]){
 
@@ -52,4 +35,22 @@ int main(int argc, char const *argv[]){
     msgctl(msgid, IPC_RMID, NULL);
 
     return 0;
+}
+
+int msg_id_generator(){
+    int msg_id;
+    key_t key;
+    key = ftok("/etc/passwd", 'F');
+    if(key == -1){
+        perror("Key");
+        exit(1);
+    } 
+
+    msg_id = msgget(key, 0666 | IPC_CREAT);
+
+    if(msg_id == -1){
+        perror("msgget");
+        exit(1);
+    }
+    return msg_id;
 }
