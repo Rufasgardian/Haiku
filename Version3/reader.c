@@ -9,7 +9,6 @@ void read_haiku(int category){
 
     int msgid = msg_id_generator();
     printf("msg id is %d\n", msgid);
-    FILE *filePtr;
     srand(time(0));
     int random_numbers[3];
     int rNumber;
@@ -20,7 +19,7 @@ void read_haiku(int category){
             perror("msgrcv");
             exit(1);
         }else if(message_jap.message_type == 1){
-            printf("japanese received\n");
+            printf("japanese received\n\n");
         }
         else
         {
@@ -28,36 +27,26 @@ void read_haiku(int category){
             exit(1);
         }
 
-        // creates file named japanese.txt and checks if it is not null
-        if((filePtr=fopen("japanese.txt", "w"))== NULL)
-        {
-            perror("fopen");
-            exit(1);
-        }
-        else
-        {
-            int index = 0;
-            for (int i = 0; i < 3; i++){
-                random_numbers[i] = generate_random_number(JAP_HAIKU-1);
-                rNumber = random_numbers[i];
 
-                for(int j=0; j < i; j++){
-                    if(random_numbers[j] == rNumber){
-                        i -= 1;
-                        break;
-                    }
+        int index = 0;
+        for (int i = 0; i < 3; i++){
+            random_numbers[i] = generate_random_number(JAP_HAIKU-1);
+            rNumber = random_numbers[i];
+
+            for(int j=0; j < i; j++){
+                if(random_numbers[j] == rNumber){
+                    i -= 1;
+                    break;
                 }
             }
-
-            for(int i=0; i < 3; i++){
-                index = random_numbers[i];
-                fprintf(filePtr, message_jap.haiku_array[index]);
-                fprintf(filePtr, "\n--------------\n");
-            }
         }
-        fclose(filePtr);
-        filePtr=NULL;
 
+        for(int i=0; i < 3; i++){
+            index = random_numbers[i];
+            printf("%s", message_jap.haiku_array[index]);
+            printf("\n--------------\n");
+        }
+        
     }
     else if (category == 2)
     {
@@ -65,7 +54,7 @@ void read_haiku(int category){
             perror("msgrcv");
             exit(1);
         }else if(message_western.message_type == 2){
-            printf("western received\n");
+            printf("western received\n\n");
         }
         else
         {
@@ -73,37 +62,25 @@ void read_haiku(int category){
             exit(1);
         }
 
-        // creates file named western.txt and checks if it is not null
-        if((filePtr=fopen("western.txt", "w"))== NULL)
-        {
-            perror("fopen");
-            exit(1);
-        }
-        else
-        {
-            int index = 0;
-              for (int i = 0; i < 3; i++){
-                random_numbers[i] = generate_random_number(JAP_HAIKU-1);
-                rNumber = random_numbers[i];
 
-                for(int j=0; j < i; j++){
-                    if(random_numbers[j] == rNumber){
-                        i -= 1;
-                        break;
-                    }
+        int index = 0;
+            for (int i = 0; i < 3; i++){
+            random_numbers[i] = generate_random_number(JAP_HAIKU-1);
+            rNumber = random_numbers[i];
+
+            for(int j=0; j < i; j++){
+                if(random_numbers[j] == rNumber){
+                    i -= 1;
+                    break;
                 }
             }
-
-            for(int i=0; i < 3; i++){
-                index = random_numbers[i];
-                fprintf(filePtr, message_western.haiku_array[index]);
-                fprintf(filePtr, "\n--------------\n");
-            }
-            
         }
-        
-        fclose(filePtr);
-        filePtr=NULL;
+
+        for(int i=0; i < 3; i++){
+            index = random_numbers[i];
+            printf("%s", message_western.haiku_array[index]);
+            printf("\n--------------\n");
+        }        
     }
     else
     {

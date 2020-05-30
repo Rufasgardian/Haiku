@@ -30,9 +30,6 @@ int main(int argc, char const *argv[])
     int msgid_sig = msg_id_generator2();
     int msgid_mes = msg_id_generator();
 
-    printf("%d aaa\n", msgid_mes);
-    printf("%d aaa\n", msgid_sig);
-
     int haiku_category[2][2];
     haiku_category[0][0] = SIGINT;
     haiku_category[0][1] = 1; // japanese 
@@ -56,7 +53,7 @@ int main(int argc, char const *argv[])
         printf("SENT WESTERN\n");
     }
 
-    while(counter < 8){
+    while(counter < 2){
         if(msgrcv(msgid_sig, &message, sizeof(message), 0, 0) == -1){
             perror("msgrcv");
             exit(1);

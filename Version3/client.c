@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <string.h>
 
+
 int msg_id_generator2();
 void sig_handler(int sig);
 
@@ -38,7 +39,7 @@ void sig_handler(int sig){
         message.message_signal_type = SIGQUIT;
     }
 
-    int msgid = msg_id_generator();
+    int msgid = msg_id_generator2();
 
     if(msgsnd(msgid, &message, sizeof(message), 0) == -1){
         perror("msgsnd");

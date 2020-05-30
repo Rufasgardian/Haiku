@@ -7,7 +7,7 @@
 #include <sys/ipc.h> 
 #include <sys/msg.h> 
 // const variables
-#define SIZE 1024
+#define SIZE 512
 #define JAP_HAIKU 6  // number of haikus from japanese category, type 1
 #define WEST_HAIKU 9 // number of haikus from western category, type 2
 
