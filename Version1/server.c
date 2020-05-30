@@ -13,19 +13,19 @@ int main(int argc, char const *argv[]){
     
     int haiku_category[2][2];
     haiku_category[0][0] = SIGINT;
-    // haiku_category[0][1] = "japanese";
+    haiku_category[0][1] = 1; // japanese 
     haiku_category[1][0] = SIGQUIT;
-    // haiku_category[1][1] = 'western';
+    haiku_category[1][1] = 2; //  western
 
     while(counter < 100){
         if(msgrcv(msgid, &message, sizeof(message), 0, 0) == -1){
             perror("msgrcv");
             exit(1);
         }
-        if(message.message_signal_type[0] == haiku_category[0][0]){ // japanese
+        if(message.message_signal_type == haiku_category[0][0]){ // japanese
             printf("Japanese\n");
         }
-        else if(message.message_signal_type[0] == haiku_category[1][0]){ // western
+        else if(message.message_signal_type == haiku_category[1][0]){ // western
             printf("Western\n");
         }
 
